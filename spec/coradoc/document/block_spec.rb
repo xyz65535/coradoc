@@ -11,7 +11,7 @@ RSpec.describe Coradoc::Document::Block do
       expect(block.title).to eq(title)
       expect(block.type).to eq(:quote)
       expect(block.lines).to be_empty
-      expect(block.attributes).to eq({})
+      expect(block.attributes.empty?).to eq(true)
     end
   end
 

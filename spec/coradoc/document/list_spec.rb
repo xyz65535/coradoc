@@ -9,5 +9,14 @@ RSpec.describe Coradoc::Document::List do
 
       expect(list.items).to eq(items)
     end
+    it "handles list continuations" do
+      items2 = Coradoc::Document::List::Item.new(["Item 2a", "Item 2b", "Item 2c"])
+      item1 = Coradoc::Document::List::Item.new("Item 1")
+      items = [item1, items2]
+
+      list = Coradoc::Document::List::Unordered.new(items)
+
+      expect(list.to_adoc).to eq("\n\n* Item 1\n* Item 2a\n+\nItem 2b\n+\nItem 2c\n")
+    end
   end
 end

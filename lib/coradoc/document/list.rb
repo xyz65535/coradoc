@@ -8,8 +8,8 @@ module Coradoc
         @items = [@items] unless @items.is_a?(Array)
         @id = options.fetch(:id, nil)
         @anchor = @id.nil? ? nil : Inline::Anchor.new(@id)
-        @ol_count = options.fetch(:ol_count, 0)
-        @attrs = options.fetch(:attrs, nil)
+        @ol_count = options.fetch(:ol_count, 1)
+        @attrs = options.fetch(:attrs, AttributeList.new)
       end
 
       def to_adoc
@@ -18,11 +18,12 @@ module Coradoc
           c = Coradoc::Generator.gen_adoc(item)
           if !c.empty?
             content << "#{prefix}"
+            content << " " if c[0]!=" "
             content << c
           end
         end
         anchor = @anchor.nil? ? "" : "#{@anchor.to_adoc}"
-        attrs = @attrs.nil? ? "" : "#{@attrs.to_adoc}"
+        attrs = @attrs.to_adoc(false)
         "\n#{anchor}#{attrs}" + content
       end
 
@@ -35,7 +36,11 @@ module Coradoc
         end
         def to_adoc
           anchor = @anchor.nil? ? "" : "#{@anchor.to_adoc}"
-          content = Coradoc::Generator.gen_adoc(@content).chomp
+          if @content.is_a?(Array)
+            content = @content.map{|subitem| Coradoc::Generator.gen_adoc(subitem)}.join("\n+\n")
+          else
+            content = Coradoc::Generator.gen_adoc(@content).chomp
+          end
           " #{anchor}#{content.chomp}\n"
         end
       end

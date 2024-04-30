@@ -8,15 +8,24 @@ module Coradoc
         @id = options.fetch(:id, nil)
         @anchor = Inline::Anchor.new(@id) if @id
         @src = options.fetch(:src, '')
-        @attributes = options.fetch(:attributes, [])
+        @attributes = options.fetch(:attributes, AttributeList.new)
       end
 
       def to_adoc
         anchor = @anchor.nil? ? "" : "#{@anchor.to_adoc}\n"
         title = ".#{@title}\n" unless @title.empty?
-        attrs = @attributes.empty? ? "\[\]" : @attributes.to_adoc
+        attrs = @attributes.to_adoc
         [anchor, title, "audio::", @src, attrs].join("")
       end
+
+      VALIDATORS_NAMED = {
+        title: String,
+        start: Integer,
+        end: Integer,
+        options: [:many, "nofollow", "noopener", "inline", "interactive"],
+        opts: [:many, "nofollow", "noopener", "inline", "interactive"]
+      }
+
     end
   end
 end
